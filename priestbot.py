@@ -68,6 +68,10 @@ emoji_aliases = [
 	{
 		"triggers": ["mrcum"],
 		"id": 1185081832665006210
+	},
+	{
+		"triggers": ["ruhroh"],
+		"id": 1185100708404535326
 	}
 ]
 
