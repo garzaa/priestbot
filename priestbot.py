@@ -292,18 +292,4 @@ def confession_channel():
 	return client.get_channel(CONFESSION_CHANNEL_ID)
 
 
-class PollOption:
-	def __init__(self, emoji: str, text: str):
-		self.emoji = emoji
-		self.text = text
-
-
-class Poll:
-	def __init__(self, message_id, poll_options: list[PollOption]):
-		self.options = {}
-		self.id = message_id
-		for x in poll_options:
-			self.options[x.emoji] = x
-
-
 client.run(TOKEN)
