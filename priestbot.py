@@ -26,7 +26,7 @@ animated_emojis = set()
 
 emoji_aliases = [
 	{
-		"triggers": ["gnash", "bite", "biting", "gnashing"],
+		"triggers": ["gnash", "bite", "biting", "gnashing", "chomp"],
 		"id": 992169924627812382
 	},
 	{
@@ -50,7 +50,7 @@ emoji_aliases = [
 		"id": 1185057540178984983
 	},
 	{
-		"triggers": ["jokr", "joke", "joker"],
+		"triggers": ["jokr", "joke", "joker", "why so serious"],
 		"id": 1185065998148186153
 	},
 	{
@@ -66,8 +66,16 @@ emoji_aliases = [
 		"id": 1185081017049030707
 	},
 	{
-		"triggers": ["mrcum"],
+		"triggers": ["mrcum", "mr. cum", "mr.cum"],
 		"id": 1185081832665006210
+	},
+	{
+		"triggers": ["goatse", "hole"],
+		"id": 1185276778969837579
+	},
+	{
+		"triggers": ["smoothbrain"],
+		"id": 1185276756844892310
 	}
 ]
 
@@ -188,7 +196,7 @@ async def on_message(message: discord.message):
 		if was_tagged(message):
 			print("was tagged in message: "+message.content)
 			# if the message contains a trigger word
-			alias = get_alias(message.content)
+			alias = get_alias(message.content.lower())
 			if alias is None:
 				print("no alias found in messages")
 				# because i KNOW thiswill happen
@@ -212,8 +220,10 @@ async def on_message(message: discord.message):
 				op = await message.channel.fetch_message(message.reference.message_id)
 				await op.add_reaction(client.get_emoji(alias))
 				# then delete the original message
-				if "with delete" in message.content:
+				if "delete" in message.content:
 					await message.delete()
+				else:
+					await message.add_reaction("🙏")
 			
 			
 		return
