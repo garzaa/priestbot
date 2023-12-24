@@ -27,7 +27,7 @@ animated_emojis = set()
 
 emoji_aliases = [
 	{
-		"triggers": ["gnash", "bite", "biting", "gnashing"],
+		"triggers": ["gnash", "bite", "biting", "gnashing", "chomp"],
 		"id": 992169924627812382
 	},
 	{
@@ -51,7 +51,7 @@ emoji_aliases = [
 		"id": 1185057540178984983
 	},
 	{
-		"triggers": ["jokr", "joke", "joker"],
+		"triggers": ["jokr", "joke", "joker", "why so serious"],
 		"id": 1185065998148186153
 	},
 	{
@@ -67,8 +67,16 @@ emoji_aliases = [
 		"id": 1185081017049030707
 	},
 	{
-		"triggers": ["mrcum"],
+		"triggers": ["mrcum", "mr. cum", "mr.cum"],
 		"id": 1185081832665006210
+	},
+	{
+		"triggers": ["goatse", "hole"],
+		"id": 1185276778969837579
+	},
+	{
+		"triggers": ["smoothbrain"],
+		"id": 1185276756844892310
 	}
 ]
 
@@ -210,7 +218,7 @@ async def on_message(message: discord.message):
 					return
 				await message.reply("in DMs, my child 🙏")
 				return
-			
+
 			for x in aliases:
 				alias = x["id"]
 				
@@ -222,6 +230,7 @@ async def on_message(message: discord.message):
 					print("adding a reaction ("+str(alias)+") to OP message from reply: "+message.content)
 					op = await message.channel.fetch_message(message.reference.message_id)
 					await op.add_reaction(client.get_emoji(alias))
+					await message.add_reaction("🙏")
 
 			if "with delete" in message.content and message.reference:
 				await message.delete()
