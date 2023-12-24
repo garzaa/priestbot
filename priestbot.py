@@ -5,6 +5,7 @@ import re
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+from operator import itemgetter
 
 load_dotenv()
 
@@ -97,12 +98,22 @@ def get_emoji(emoji_name: str) -> str:
 def substitute_emojis(msg: str) -> str:
 	return re.sub(emoji_regex, on_match, msg)
 
-def get_alias(msg: str) -> dict:
+def get_aliases(msg: str) -> list[dict]:
+	aliases = []
 	for x in emoji_aliases:
 		for t in x["triggers"]:
 			if t in msg:
-				return x
-	return None
+				# aliases.append(x)
+				aliases.append({
+					"x": x,
+					"idx": msg.index(t)
+				})
+	if not aliases:
+		return []
+	print(str(aliases))
+	aliases.sort(key=lambda d: d["idx"])
+	print(str(aliases))
+	return map(lambda a: a["x"], aliases)
 
 penances = [
 	"say three Hail Marys and one Our Father",
@@ -188,10 +199,10 @@ async def on_message(message: discord.message):
 		if was_tagged(message):
 			print("was tagged in message: "+message.content)
 			# if the message contains a trigger word
-			alias = get_alias(message.content)
-			if alias is None:
+			aliases = get_aliases(message.content)
+			if not aliases:
 				print("no alias found in messages")
-				# because i KNOW thiswill happen
+				# because i KNOW this will happen
 				if 'cum' in message.content:
 					# react with unsure
 					print("someone asked for cum again")
@@ -200,25 +211,33 @@ async def on_message(message: discord.message):
 				await message.reply("in DMs, my child 🙏")
 				return
 			
-			alias = alias["id"]
-			print("got alias: "+str(alias))
-			
-			# if the message isn't a reply, emoji react on it
-			if message.reference is None:
-				print("adding a reaction to message: "+message.content)
-				await message.add_reaction(client.get_emoji(alias))
-			else:
-				print("adding a reaction to OP message from reply: "+message.content)
-				op = await message.channel.fetch_message(message.reference.message_id)
-				await op.add_reaction(client.get_emoji(alias))
-				# then delete the original message
-				if "with delete" in message.content:
-					await message.delete()
+			for x in aliases:
+				alias = x["id"]
+				
+				# if the message isn't a reply, emoji react on it
+				if message.reference is None:
+					print("adding a reaction ("+str(alias)+") to message: "+message.content)
+					await message.add_reaction(client.get_emoji(alias))
+				else:
+					print("adding a reaction ("+str(alias)+") to OP message from reply: "+message.content)
+					op = await message.channel.fetch_message(message.reference.message_id)
+					await op.add_reaction(client.get_emoji(alias))
+
+			if "with delete" in message.content and message.reference:
+				await message.delete()
 			
 			
 		return
 
 	print("got dm: "+message.content)
+
+	if message.content == "emojis":
+		emoji_response = "I support these extra emoji, my child:\n"
+		for alias in emoji_aliases:
+			emoji_response += str(client.get_emoji(alias["id"])) + ": " + str(alias["triggers"]) + "\n"
+		emoji_response += "\nReply to a message and tag me with one or more trigger words, and I'll put that reaction on the original message. Or tag me without replying to any message, and I'll put the react on your message instead."
+		await message.reply(emoji_response)
+		return
 
 	if message.content == "" or message.content.isspace():
 		await message.reply("I need a real sin, my child.")
