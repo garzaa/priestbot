@@ -232,7 +232,7 @@ async def on_message(message: discord.message):
 					await op.add_reaction(client.get_emoji(alias))
 					await message.add_reaction("🙏")
 
-			if "with delete" in message.content and message.reference:
+			if "delete" in message.content and message.reference:
 				await message.delete()
 			
 			
