@@ -75,7 +75,7 @@ emoji_aliases = [
 		"id": 1185276778969837579
 	},
 	{
-		"triggers": ["smoothbrain"],
+		"triggers": ["smoothbrain", "smooth brain"],
 		"id": 1185276756844892310
 	}
 ]
@@ -195,7 +195,8 @@ penances = [
 	"listen to Become White subliminal videos on youtube while you sleep tonight",
 	"put your finger in a deli slicer but just a little",
 	"learn something new",
-	"jerk & pluck me"
+	"jerk & pluck me",
+	"cook and eat a five-course meal with all spoiled food",
 ]
 
 @client.event
