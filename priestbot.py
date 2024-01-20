@@ -122,7 +122,7 @@ def get_aliases(msg: str) -> list[dict]:
 				# aliases.append(x)
 				aliases.append({
 					"x": x,
-					"idx": msg.index(t)
+					"idx": msg.lower().index(t)
 				})
 	if not aliases:
 		return []
