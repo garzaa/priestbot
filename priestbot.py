@@ -59,11 +59,11 @@ emoji_aliases = [
 		"id": 1185066000056586260
 	},
 	{
-		"triggers": ["tinylmao", "tinylmfao", "tinylol"],
+		"triggers": ["tinylmao", "tinylmfao", "tinylol", "lmao"],
 		"id": 1185065026286014555
 	},
 	{
-		"triggers": ["patheticlittleworm"],
+		"triggers": ["patheticlittleworm", "worm"],
 		"id": 1185081017049030707
 	},
 	{
@@ -77,6 +77,14 @@ emoji_aliases = [
 	{
 		"triggers": ["smoothbrain", "smooth brain"],
 		"id": 1185276756844892310
+	},
+	{
+		"triggers": ["jellysad"],
+		"id": 1185274212995305593
+	},
+	{
+		"triggers": ["grinch"],
+		"id": 1198372828668502037
 	}
 ]
 
