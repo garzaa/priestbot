@@ -118,7 +118,7 @@ def get_aliases(msg: str) -> list[dict]:
 	aliases = []
 	for x in emoji_aliases:
 		for t in x["triggers"]:
-			if t in msg:
+			if t in msg.lower():
 				# aliases.append(x)
 				aliases.append({
 					"x": x,
