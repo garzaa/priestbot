@@ -205,6 +205,16 @@ penances = [
 	"learn something new",
 	"jerk & pluck me",
 	"cook and eat a five-course meal with all spoiled food",
+	"die a painful death involving a car covered in hammers that explodes more than a few times and hammers go flying everywhere",
+	"accuse someone else of submitting your confession",
+	"do that thing you haven't gotten around to doing yet. YES that one",
+	"get mixed up with me and see where we match",
+	"change your zodiac sign",
+	"crawl",
+	"punish someone else for your own sins",
+	"handle raw meat next time you have a cut on your hand",
+	"identify the thing wrong with this mes‎sage",
+	"collect three bags of hair (0/3)"
 ]
 
 @client.event
