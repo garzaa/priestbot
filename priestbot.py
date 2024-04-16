@@ -126,9 +126,7 @@ def get_aliases(msg: str) -> list[dict]:
 				})
 	if not aliases:
 		return []
-	print(str(aliases))
 	aliases.sort(key=lambda d: d["idx"])
-	print(str(aliases))
 	return map(lambda a: a["x"], aliases)
 
 penances = [
@@ -143,7 +141,6 @@ penances = [
 	"...hold on, that sounds bad enough that you should see a real priest",
 	"etch a little cross into a saltine and eat it",
 	"write 100 times on the chalkboard \"I will not do sins\"",
-	"I'd tell you to kill yourself but that's also a sin",
 	"eat more fiber and think positive thoughts",
 	"download a free online bible TODAY! www.godschildrenbibleschool.com/download/bible-for-beginners",
 	"give me your social security number and I'll set this right with the man upstairs",
@@ -212,7 +209,7 @@ penances = [
 	"change your zodiac sign",
 	"crawl",
 	"punish someone else for your own sins",
-	"handle raw meat next time you have a cut on your hand",
+	"handle raw meat with a cut on your hand",
 	"identify the thing wrong with this mes‎sage",
 	"collect three bags of hair (0/3)"
 ]
