@@ -118,17 +118,15 @@ def get_aliases(msg: str) -> list[dict]:
 	aliases = []
 	for x in emoji_aliases:
 		for t in x["triggers"]:
-			if t in msg:
+			if t in msg.lower():
 				# aliases.append(x)
 				aliases.append({
 					"x": x,
-					"idx": msg.index(t)
+					"idx": msg.lower().index(t)
 				})
 	if not aliases:
 		return []
-	print(str(aliases))
 	aliases.sort(key=lambda d: d["idx"])
-	print(str(aliases))
 	return map(lambda a: a["x"], aliases)
 
 penances = [
@@ -142,7 +140,6 @@ penances = [
 	"...hold on, that sounds bad enough that you should see a real priest",
 	"etch a little cross into a saltine and eat it",
 	"write 100 times on the chalkboard \"I will not do sins\"",
-	"I'd tell you to kill yourself but that's also a sin",
 	"eat more fiber and think positive thoughts",
 	"download a free online bible TODAY! www.godschildrenbibleschool.com/download/bible-for-beginners",
 	"give me your social security number and I'll set this right with the man upstairs",
@@ -204,6 +201,16 @@ penances = [
 	"learn something new",
 	"jerk & pluck me",
 	"cook and eat a five-course meal with all spoiled food",
+	"die a painful death involving a car covered in hammers that explodes more than a few times and hammers go flying everywhere",
+	"accuse someone else of submitting your confession",
+	"do that thing you haven't gotten around to doing yet. YES that one",
+	"get mixed up with me and see where we match",
+	"change your zodiac sign",
+	"crawl",
+	"punish someone else for your own sins",
+	"handle raw meat with a cut on your hand",
+	"identify the thing wrong with this mes‎sage",
+	"collect three bags of hair (0/3)"
 ]
 
 judgments = [
