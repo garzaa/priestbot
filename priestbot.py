@@ -133,7 +133,6 @@ def get_aliases(msg: str) -> list[dict]:
 
 penances = [
 	"say three Hail Marys and one Our Father",
-	"kill yourself in public ritual suicide",
 	"go out there and make a real difference",
 	"eat only chips for the next two weeks",
 	"treat yourself to a little beverage - you've earned it",
@@ -207,6 +206,38 @@ penances = [
 	"cook and eat a five-course meal with all spoiled food",
 ]
 
+judgments = [
+	"I don't know about this one.",
+	"This one is definitely bad!",
+	"This one is definitely good!",
+	"This one would be good, except for the fact that the vibes are soured by the fact that it's you doing it. So, it's bad.",
+	"What? Why ask me? Isn't it clear?",
+	"I don't know, it could send you to heaven OR hell.",
+	"This is bad, but I think you've earned it.",
+	"NO",
+	"CERTAIN DAMNATION",
+	"I'm pretty sure you get sent to heaven immediately if you do this.",
+	"You will die in seven days",
+	"Maybe.",
+	"Don't count on it.",
+	"I don't knowwwww",
+	"This is bad, but as long as you do a penance for it, it's fine.",
+	"What does it matter? You won't listen to me anyway",
+	"You are a deeply sick creature",
+	"I did this once and it was OK.",
+	"AUGHHH OW OW OW",
+	"You have to do this several times for it to be worth it.",
+	"You can't do it sober but otherwise it's fine.",
+	"YEAH.",
+	"I didn't like reading this."
+]
+
+judged_messages = set()
+
+def is_judgment_request(msg: str) -> bool:
+	return "judg" in msg
+
+
 @client.event
 async def on_message(message: discord.message):
 	if message.author == client.user:
@@ -225,7 +256,23 @@ async def on_message(message: discord.message):
 					print("someone asked for cum again")
 					await message.add_reaction(client.get_emoji(819694888672296982))
 					return
-				await message.reply("in DMs, my child 🙏")
+				elif is_judgment_request(message.content):
+					if message.reference is None:
+						if message.id in judged_messages:
+							await message.reply("I have already passed judgment, my child.")
+							return
+						judged_messages.add(message.id)
+						await message.reply(random.choice(judgments))
+					else:
+						op = await message.channel.fetch_message(message.reference.message_id)
+						if op.id in judged_messages:
+							await message.reply("I have already passed judgment, my child.")
+							return
+						judged_messages.add(op.id)
+						await op.reply(random.choice(judgments))
+					print(judged_messages)
+				else:
+					await message.reply("in DMs, my child 🙏")
 				return
 
 			for x in aliases:
