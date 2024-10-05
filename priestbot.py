@@ -40,7 +40,7 @@ emoji_aliases = [
 		"id": 1004917222495498240
 	},
 	{
-		"triggers": ["sussy"],
+		"triggers": ["sussy", "throw it back"],
 		"id": 1185056319779127317
 	},
 	{
