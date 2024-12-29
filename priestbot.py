@@ -378,7 +378,7 @@ async def announce_sin(sin: str):
 	if chance <= 2:
 		# 1 in 50 chance, if judging, to accidentally let slip the gender
 		if (random.randint(0, 50) == 1):
-			if (random.randint(0, 1) == 1):
+			if (random.randint(0, 10) == 1):
 				s += "\n_Wow! It's certain damnation for him! I mean them!_"
 			else:
 				s += "\n_Wow! It's certain damnation for her! I mean them!_"
