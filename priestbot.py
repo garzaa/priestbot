@@ -5,6 +5,7 @@ import re
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import sys
 from operator import itemgetter
 
 load_dotenv()
@@ -39,7 +40,7 @@ emoji_aliases = [
 		"id": 1004917222495498240
 	},
 	{
-		"triggers": ["sussy"],
+		"triggers": ["sussy", "throw it back"],
 		"id": 1185056319779127317
 	},
 	{
@@ -47,7 +48,7 @@ emoji_aliases = [
 		"id": 1185057628804628481
 	},
 	{
-		"triggers": ["bonk"],
+		"triggers": ["bonk", "beat"],
 		"id": 1185057540178984983
 	},
 	{
@@ -97,7 +98,12 @@ async def on_ready():
 			animated_emojis.add(emoji.id)
 		emojis[":"+emoji.name+":"] = emoji.id
 	penances.append(substitute_emojis("Congrations! You've earned a single :catholic: Catholic Coin! Use :catholic: Catholic Coins as reactions to confessions to get a private DM about who sent them! Terms and conditions may apply.\n\n**Get More :catholic: Catholic Coins**\n 1:catholic: $0.99 \n5:catholic: $3.49 📈 Most Popular \n10:catholic: $8.99 💸 Best Value"))
-	# await confession_channel().send(substitute_emojis("hi"))
+	if len(sys.argv) > 1:
+		if len(sys.argv) > 2:
+			print("surround what you want to say with quotes")
+			sys.exit(1)
+		else:
+			await confession_channel().send(substitute_emojis(sys.argv[1]))
 
 def on_match(matchobj):
 	return get_emoji(matchobj.group(0))
@@ -178,7 +184,7 @@ penances = [
 	"go outside, find a bug, and eat it",
 	"try to become less racist. Just try",
 	"get pig",
-	"write in Hillary for 2024",
+	"Write In Biden",
 	"you must contract a rare disease",
 	"gamble with borrowed money",
 	"drive behind a pig trailer for at least 20 minutes next time you're on the road",
@@ -203,14 +209,26 @@ penances = [
 	"cook and eat a five-course meal with all spoiled food",
 	"die a painful death involving a car covered in hammers that explodes more than a few times and hammers go flying everywhere",
 	"accuse someone else of submitting your confession",
-	"do that thing you haven't gotten around to doing yet. YES that one",
+	"do that thing you haven't gotten around to doing yet. YES, that one",
 	"get mixed up with me and see where we match",
 	"change your zodiac sign",
 	"crawl",
 	"punish someone else for your own sins",
 	"handle raw meat with a cut on your hand",
 	"identify the thing wrong with this mes‎sage",
-	"collect three bags of hair (0/3)"
+	"collect three bags of hair (0/3)",
+	"go off your meds for a month",
+	"coin a new slur",
+	"listen to Become White Subliminal Hypnosis videos on Youtube tonight. Unless you're already white, in which case listen to Become Latino videos instead",
+	"actually drink enough water today and see if that helps",
+	"try to fathom the scale of the megastructure",
+	"don't have anything",
+	"grieve and mourn",
+	"stick your head in a drawer and slam it and open it and slam it",
+	"COLLECT MY WAFERS",
+	"post a credible threat and see what happens",
+	"stop moralizing your hobby",
+	"take the Grinchpill"
 ]
 
 judgments = [
