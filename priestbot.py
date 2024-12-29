@@ -6,7 +6,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 import sys
-from operator import itemgetter
+import subprocess
+import uuid
 
 load_dotenv()
 
@@ -18,9 +19,13 @@ hours_cooldown: int = 1
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 client = discord.Client(intents=intents)
 
+from difflib import SequenceMatcher as SM
+
 confession_cooldowns = {}
+pig_cooldowns = {}
 
 emoji_regex = r"(?<!\<):\w+:"
 emojis = {}
@@ -89,6 +94,8 @@ emoji_aliases = [
 	}
 ]
 
+username_to_user = {}
+
 @client.event
 async def on_ready():
 	# print("priestbot online 🙏:catholic:")
@@ -97,6 +104,12 @@ async def on_ready():
 		if emoji.animated:
 			animated_emojis.add(emoji.id)
 		emojis[":"+emoji.name+":"] = emoji.id
+
+	for user in forest.members:
+		username_to_user[user.name] = user
+		if user.nick:
+			username_to_user[user.nick] = user
+
 	penances.append(substitute_emojis("Congrations! You've earned a single :catholic: Catholic Coin! Use :catholic: Catholic Coins as reactions to confessions to get a private DM about who sent them! Terms and conditions may apply.\n\n**Get More :catholic: Catholic Coins**\n 1:catholic: $0.99 \n5:catholic: $3.49 📈 Most Popular \n10:catholic: $8.99 💸 Best Value"))
 	if len(sys.argv) > 1:
 		if len(sys.argv) > 2:
@@ -315,8 +328,7 @@ async def on_message(message: discord.message):
 
 			if "delete" in message.content and message.reference:
 				await message.delete()
-			
-			
+					
 		return
 
 	print("got dm: "+message.content)
@@ -327,6 +339,32 @@ async def on_message(message: discord.message):
 			emoji_response += str(client.get_emoji(alias["id"])) + ": " + str(alias["triggers"]) + "\n"
 		emoji_response += "\nReply to a message and tag me with one or more trigger words, and I'll put that reaction on the original message. Or tag me without replying to any message, and I'll put the react on your message instead."
 		await message.reply(emoji_response)
+		return
+	
+	space_split = message.content.split(" ")
+	message_content = " ".join(space_split[2:])
+	if space_split[0] == "messagepig":
+		now = datetime.now()
+		if message.author.id in pig_cooldowns and pig_cooldowns[message.author.id] == datetime.now().day:
+			await message.reply("You may only send one message pig per day, my child.")
+			return
+
+		print(f"got message pig request from {message.author}: " + " ".join(space_split[1:]))
+		if len(message_content) > 300:
+			await message.reply("Message won't fit on pig, my child! try something 200 characters or less")
+			return
+		target = space_split[1]
+		for name in username_to_user:
+			similarity = SM(None, target, name).ratio()
+			if similarity > 0.88:
+				if name == "priestbot":
+					await message.reply("Thank you for the offer, my chid. I am forbidden from receiving message pigs, as they are blasphemous.")
+					return
+				await message_pig(message_content, username_to_user[name])
+				await message.reply(f"Message pig sent to {name}, my child.")
+				pig_cooldowns[message.author.id] = datetime.now().day
+				return
+		await message.reply("I couldn't find a recipient for your message pig! Try their one-word username, my child.")
 		return
 
 	if message.content == "" or message.content.isspace():
@@ -369,7 +407,29 @@ def make_penance() -> str:
         s: str = "Thank you, my child. I will relay your message immediately. For your penance, "
         s += random.choice(penances) + "."
         return s
+	
 
+async def message_pig(message: str, target: discord.User) -> str:
+	pig_id = str(uuid.uuid4())[:8]
+	pigfile = f"messagePig{pig_id}.png"
+	chunked_message = fit_message_to_pig(message).replace("\n", "\\n")
+	subprocess.call(f"magick.exe messagepig.png -pointsize 32 -gravity North -stroke black -strokewidth 2 -annotate +90+140 \"{chunked_message}\" {pigfile}", shell=True)
+	await target.send("You've recieved a daily message pig from an anonymous sender!", file=discord.File(pigfile))
+	await target.send("To send a message pig, simply send me `messagepig [target user] [your message here]`.")
+	os.remove(pigfile)
+
+
+def fit_message_to_pig(message: str) -> str:
+	linelen = 0
+	outmsg = ""
+	for i, letter in enumerate(message):
+		linelen += 1
+		if linelen >= 40 and letter == " ":
+			outmsg += "\n"
+			linelen = 0
+		else:
+			outmsg += message[i]
+	return outmsg
 
 async def announce_sin(sin: str):
 	s: str = "_One of our members has sinned. Here is their confession._\n> "
@@ -389,15 +449,13 @@ async def announce_sin(sin: str):
 	await confession_channel().send(s)
 
 
-def is_dm(message):
-	return not message.guild
-
-
 def was_tagged(message: Message) -> bool:
 	return client.user.mentioned_in(message)
 
 
 def confession_channel():
+	if os.getenv("CONFESSION_CHANNEL_OVERRIDE"):
+		return client.get_channel(int(os.getenv("CONFESSION_CHANNEL_OVERRIDE")))
 	return client.get_channel(CONFESSION_CHANNEL_ID)
 
 
