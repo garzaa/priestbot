@@ -418,7 +418,7 @@ async def message_pig(message: str, target: discord.User) -> str:
 	chunked_message = fit_message_to_pig(message).replace("\n", "\\n")
 	subprocess.call(f"magick.exe messagepig.png -pointsize 32 -gravity North -stroke black -strokewidth 2 -annotate +90+140 \"{chunked_message}\" {pigfile}", shell=True)
 	await target.send("You've recieved a daily message pig from an anonymous sender!", file=discord.File(pigfile))
-	await target.send("To send a message pig, simply send me `messagepig [target user] [your message here]`.")
+	await target.send("To send a message pig, simply send me `messagepig` `targetuser` `your message here`.")
 	os.remove(pigfile)
 
 
