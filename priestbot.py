@@ -333,16 +333,6 @@ async def on_message(message: discord.message):
 				await message.delete()
 					
 		return
-
-	print("got dm: "+message.content)
-
-	if message.content == "emojis":
-		emoji_response = "I support these extra emoji, my child:\n"
-		for alias in emoji_aliases:
-			emoji_response += str(client.get_emoji(alias["id"])) + ": " + str(alias["triggers"]) + "\n"
-		emoji_response += "\nReply to a message and tag me with one or more trigger words, and I'll put that reaction on the original message. Or tag me without replying to any message, and I'll put the react on your message instead."
-		await message.reply(emoji_response)
-		return
 	
 	space_split = message.content.split(" ")
 	message_content = " ".join(space_split[2:])
@@ -354,7 +344,7 @@ async def on_message(message: discord.message):
 
 		print(f"got message pig request from {message.author}: " + " ".join(space_split[1:]))
 		if len(message_content) > 300:
-			await message.reply("Message won't fit on pig, my child! try something 200 characters or less")
+			await message.reply("Message won't fit on pig, my child! try something 300 characters or less")
 			return
 		target = space_split[1]
 		for name in username_to_user:
@@ -369,6 +359,8 @@ async def on_message(message: discord.message):
 				return
 		await message.reply("I couldn't find a recipient for your message pig! Try their one-word username, my child.")
 		return
+	
+	print("got dm: "+message.content)
 
 	if message.content == "" or message.content.isspace():
 		await message.reply("I need a real sin, my child.")
