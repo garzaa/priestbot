@@ -98,7 +98,7 @@ username_to_user = {}
 
 @client.event
 async def on_ready():
-	# print("priestbot online 🙏:catholic:")
+	print("starting precache...")
 	forest: discord.guild = client.get_guild(372636330724950017)
 	for emoji in forest.emojis:
 		if emoji.animated:
@@ -117,6 +117,9 @@ async def on_ready():
 			sys.exit(1)
 		else:
 			await confession_channel().send(substitute_emojis(sys.argv[1]))
+
+	print("precache finished, ready for confessions")
+
 
 def on_match(matchobj):
 	return get_emoji(matchobj.group(0))
