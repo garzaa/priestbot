@@ -354,7 +354,10 @@ async def on_message(message: discord.message):
 					await message.reply("Thank you for the offer, my chid. I am forbidden from receiving message pigs, as they are blasphemous.")
 					return
 				await message_pig(message_content, username_to_user[name])
-				await message.reply(f"Message pig sent to {name}, my child.")
+				reply_msg = f"Message pig sent to {name}, my child."
+				if confession_cooldowns.pop(message.author.id, None):
+					reply_msg += " Your confession cooldown has been waived due to your generous act of porcine outreach."
+				await message.reply(reply_msg)
 				pig_cooldowns[message.author.id] = datetime.now().day
 				return
 		await message.reply("I couldn't find a recipient for your message pig! Try their one-word username, my child.")
