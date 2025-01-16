@@ -408,8 +408,7 @@ def make_penance() -> str:
 	
 
 async def message_pig(message: str, target: discord.User) -> str:
-	pig_id = str(uuid.uuid4())[:8]
-	pigfile = f"messagePig{pig_id}.png"
+	pigfile = f"messagePigOutput.png"
 	chunked_message = fit_message_to_pig(message).replace("\n", "\\n")
 	subprocess.call(f"magick.exe messagepig.png -pointsize 32 -gravity North -stroke black -strokewidth 2 -annotate +90+140 \"{chunked_message}\" {pigfile}", shell=True)
 	await target.send("You've recieved a daily message pig from an anonymous sender!", file=discord.File(pigfile))
