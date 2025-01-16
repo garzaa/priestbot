@@ -353,7 +353,8 @@ async def on_message(message: discord.message):
 				if name == "priestbot":
 					await message.reply("Thank you for the offer, my chid. I am forbidden from receiving message pigs, as they are blasphemous.")
 					return
-				await message_pig(message_content, username_to_user[name])
+				file_id = await message_pig(message_content, username_to_user[name])
+				os.remove(file_id)
 				reply_msg = f"Message pig sent to {name}, my child."
 				if confession_cooldowns.pop(message.author.id, None):
 					reply_msg += " Your confession cooldown has been waived due to your generous act of porcine outreach."
@@ -408,11 +409,12 @@ def make_penance() -> str:
 	
 
 async def message_pig(message: str, target: discord.User) -> str:
-	pigfile = f"messagePigOutput.png"
+	pig_id = str(uuid.uuid4())[:8]
+	pigfile = f"messagePig{pig_id}.png"
 	chunked_message = fit_message_to_pig(message).replace("\n", "\\n")
 	subprocess.call(f"magick.exe messagepig.png -pointsize 32 -gravity North -stroke black -strokewidth 2 -annotate +90+140 \"{chunked_message}\" {pigfile}", shell=True)
 	await target.send("You've recieved a daily message pig from an anonymous sender!", file=discord.File(pigfile))
-	os.remove(pigfile)
+	return pigfile
 
 
 def fit_message_to_pig(message: str) -> str:
