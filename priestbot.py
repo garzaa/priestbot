@@ -336,7 +336,7 @@ async def on_message(message: discord.message):
 	
 	space_split = message.content.split(" ")
 	message_content = " ".join(space_split[2:])
-	if space_split[0] == "messagepig":
+	if space_split[0].lower() == "messagepig":
 		now = datetime.now()
 		if message.author.id in pig_cooldowns and pig_cooldowns[message.author.id] == datetime.now().day:
 			await message.reply("You may only send one message pig per day, my child.")
