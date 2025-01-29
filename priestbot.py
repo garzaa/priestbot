@@ -356,8 +356,9 @@ async def on_message(message: discord.message):
 				file_id = await message_pig(message_content, username_to_user[name])
 				os.remove(file_id)
 				reply_msg = f"Message pig sent to {name}, my child."
-				if confession_cooldowns.pop(message.author.id, None):
+				if on_cooldown(message.author.id):
 					reply_msg += " Your confession cooldown has been waived due to your generous act of porcine outreach."
+					del confession_cooldowns[message.author.id]
 				await message.reply(reply_msg)
 				pig_cooldowns[message.author.id] = datetime.now().day
 				return
@@ -378,8 +379,7 @@ async def on_message(message: discord.message):
 		await message.reply("Hyperlinking is a sin, my child.")
 		return
 
-	now = datetime.now()
-	if message.author.id in confession_cooldowns and not past_cooldown(now, confession_cooldowns[message.author.id]):
+	if on_cooldown(message.author.id):
 		await message.reply("You are confessing too quickly, my child. Buy Gems To Decrease Your Cooldown Here: <http://bit.ly/4509waX>")
 		return
 
@@ -390,6 +390,10 @@ async def on_message(message: discord.message):
 		await message.reply("Your message was passed on, but deemed not sinful enough. You may confess again this hour.")
 	else:
 		confession_cooldowns[message.author.id] = now
+
+
+def on_cooldown(user_id) -> bool:
+	return user_id in confession_cooldowns and not past_cooldown(datetime.now(), confession_cooldowns[user_id])
 
 
 def past_cooldown(now, then) -> bool:
