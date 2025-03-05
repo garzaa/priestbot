@@ -91,6 +91,10 @@ emoji_aliases = [
 	{
 		"triggers": ["grinch"],
 		"id": 1198372828668502037
+	},
+	{
+		"triggers": ["go whiteboy", "go white boy"],
+		"id": 1346703777650184222
 	}
 ]
 
