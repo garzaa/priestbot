@@ -126,8 +126,8 @@ async def on_ready():
 			await confession_channel().send(substitute_emojis(sys.argv[1]))
 
 	print("checking for moldfile...")
-	if os.path.isfile(os.path.join(os.getcwd(), "moldfile.txt")):
-		moldfile = open("moldfile.txt", "r+")
+	if os.path.isfile(os.path.join(os.getcwd(), "moldfile")):
+		moldfile = open("moldfile", "r+")
 		last_mold_event = datetime.fromisoformat(moldfile.readline())
 		print("last mold event: "+last_mold_event.isoformat())
 		max_mold_days = int(moldfile.readline())
@@ -135,7 +135,7 @@ async def on_ready():
 		moldfile.close()
 	else:
 		print("no moldfile found, creating it with today's date")
-		with open("moldfile.txt", "w+") as moldfile:
+		with open("moldfile", "w+") as moldfile:
 			moldfile.writelines([
 				datetime.now().isoformat(),
 				"\n0"
