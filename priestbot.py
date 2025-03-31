@@ -31,6 +31,9 @@ emoji_regex = r"(?<!\<):\w+:"
 emojis = {}
 animated_emojis = set()
 
+last_mold_event = datetime.now()
+max_mold_days = 0
+
 emoji_aliases = [
 	{
 		"triggers": ["gnash", "bite", "biting", "gnashing", "chomp"],
@@ -121,6 +124,24 @@ async def on_ready():
 			sys.exit(1)
 		else:
 			await confession_channel().send(substitute_emojis(sys.argv[1]))
+
+	print("checking for moldfile...")
+	if os.path.isfile(os.path.join(os.getcwd(), "moldfile.txt")):
+		moldfile = open("moldfile.txt", "r+")
+		last_mold_event = datetime.fromisoformat(moldfile.readline())
+		print("last mold event: "+last_mold_event)
+		max_mold_days = int(moldfile.readline())
+		print("max mold days: "+max_mold_days)
+		moldfile.close()
+	else:
+		print("no moldfile found, creating it with today's date")
+		with open("moldfile.txt", "r") as moldfile:
+			moldfile.writelines([
+				datetime.now().isoformat(),
+				"0"
+			])
+		last_mold_event=  datetime.now()
+		max_mold_days = 0
 
 	print("precache finished, ready for confessions")
 
@@ -293,51 +314,57 @@ async def on_message(message: discord.message):
 			print("was tagged in message: "+message.content)
 			# if the message contains a trigger word
 			aliases = get_aliases(message.content)
-			if not aliases:
-				print("no alias found in messages")
-				# because i KNOW this will happen
-				if 'cum' in message.content:
-					# react with unsure
-					print("someone asked for cum again")
-					await message.add_reaction(client.get_emoji(819694888672296982))
-					return
-				elif is_judgment_request(message.content):
+			if aliases:
+				for x in aliases:
+					alias = x["id"]
+				
+					# if the message isn't a reply, emoji react on it
 					if message.reference is None:
-						if message.id in judged_messages:
-							await message.reply("I have already passed judgment, my child.")
-							return
-						judged_messages.add(message.id)
-						await message.reply(random.choice(judgments))
+						print("adding a reaction ("+str(alias)+") to message: "+message.content)
+						await message.add_reaction(client.get_emoji(alias))
 					else:
+						print("adding a reaction ("+str(alias)+") to OP message from reply: "+message.content)
 						op = await message.channel.fetch_message(message.reference.message_id)
-						if op.id in judged_messages:
-							await message.reply("I have already passed judgment, my child.")
-							return
-						judged_messages.add(op.id)
-						await op.reply(random.choice(judgments))
-					print(judged_messages)
-				else:
-					await message.reply("in DMs, my child 🙏")
+						await op.add_reaction(client.get_emoji(alias))
+						await message.add_reaction("🙏")
+				if "delete" in message.content and message.reference:
+					await message.delete()
 				return
 
-			for x in aliases:
-				alias = x["id"]
-				
-				# if the message isn't a reply, emoji react on it
-				if message.reference is None:
-					print("adding a reaction ("+str(alias)+") to message: "+message.content)
-					await message.add_reaction(client.get_emoji(alias))
-				else:
-					print("adding a reaction ("+str(alias)+") to OP message from reply: "+message.content)
-					op = await message.channel.fetch_message(message.reference.message_id)
-					await op.add_reaction(client.get_emoji(alias))
-					await message.add_reaction("🙏")
+			elif 'cum' in message.content:
+				# react with unsure
+				print("someone asked for cum again")
+				await message.add_reaction(client.get_emoji(819694888672296982))
+				return
 
-			if "delete" in message.content and message.reference:
-				await message.delete()
+			elif is_judgment_request(message.content):
+				if message.reference is None:
+					if message.id in judged_messages:
+						await message.reply("I have already passed judgment, my child.")
+						return
+					judged_messages.add(message.id)
+					await message.reply(random.choice(judgments))
+				else:
+					op = await message.channel.fetch_message(message.reference.message_id)
+					if op.id in judged_messages:
+						await message.reply("I have already passed judgment, my child.")
+						return
+					judged_messages.add(op.id)
+					await op.reply(random.choice(judgments))
+				print(judged_messages)
+
+			elif 'mold counter' in message.content.lower():
+				current_mold_event = datetime.now()
+				days_since_mold = (current_mold_event - last_mold_event).days
+				await message.reply("Mold counter reset, my child. It had been "+days_since_mold+" since the last mold event.\nIt is now back to zero. The current record is "+max_mold_days+" days.")
+
+			else:
+				await message.reply("in DMs, my child 🙏")
+				return
 					
 		return
 	
+	# message pigs
 	space_split = message.content.split(" ")
 	message_content = " ".join(space_split[2:])
 	if space_split[0].lower() == "messagepig":
