@@ -314,6 +314,9 @@ def is_judgment_request(msg: str) -> bool:
 
 @client.event
 async def on_message(message: discord.message):
+	global last_mold_event
+	global max_mold_days
+
 	if message.author == client.user:
 		return
 
@@ -361,17 +364,17 @@ async def on_message(message: discord.message):
 					await op.reply(random.choice(judgments))
 				print(judged_messages)
 
-			elif 'mold counter' in message.content.lower():
-				global last_mold_event
-				global max_mold_days
+			elif 'reset' in message.content.lower() and 'mold counter' in message.content.lower():
 				current_mold_event = datetime.now()
 				days_since_mold = (current_mold_event - last_mold_event).days
 				if days_since_mold > max_mold_days:
 					max_mold_days = days_since_mold
-				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" days since the last mold event. It is now back to zero.\nThe current record is "+str(max_mold_days)+" days.")
+				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" days since the last mold event.\nThe current record is "+str(max_mold_days)+" days.\n"+make_penance(relay=False))
 				# update the moldfile
 				last_mold_event = datetime.now()
 				reset_moldfile()
+			elif 'mold counter' in message.content.lower():
+				await message.reply("It's been "+str((datetime.now() - last_mold_event).days) +" days since the last mold event, my child. Your current group record is "+str(max_mold_days)+" days.")
 
 			else:
 				await message.reply("in DMs, my child 🙏")
@@ -449,13 +452,14 @@ def past_cooldown(now, then) -> bool:
 	return diff.total_seconds() > cooldown_seconds
 
 
-def make_penance() -> str:
-    if random.randint(0, 100) <= 2:
-        return "I can't believe how sick you make me."
-    else:
-        s: str = "Thank you, my child. I will relay your message immediately. For your penance, "
-        s += random.choice(penances) + "."
-        return s
+def make_penance(relay=True) -> str:
+	if random.randint(0, 100) <= 2:
+		return "I can't believe how sick you make me."
+	else:
+		s: str = "Thank you, my child. I will relay your message immediately. " if relay else ""
+		s += "For your penance, "
+		s += random.choice(penances) + "."
+		return s
 	
 
 async def message_pig(message: str, target: discord.User) -> str:
