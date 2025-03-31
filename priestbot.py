@@ -104,14 +104,19 @@ emoji_aliases = [
 username_to_user = {}
 
 def reset_moldfile():
+	global last_mold_event
+	global max_mold_days
 	with open("moldfile", "w+") as moldfile:
 		moldfile.writelines([
 			last_mold_event.isoformat(),
-			max_mold_days
+			"\n",
+			str(max_mold_days)
 		])
 
 @client.event
 async def on_ready():
+	global last_mold_event
+	global max_mold_days
 	print("starting precache...")
 	forest: discord.guild = client.get_guild(372636330724950017)
 	for emoji in forest.emojis:
@@ -135,10 +140,10 @@ async def on_ready():
 	print("checking for moldfile...")
 	if os.path.isfile(os.path.join(os.getcwd(), "moldfile")):
 		moldfile = open("moldfile", "r+")
-		last_mold_event = datetime.fromisoformat(moldfile.readline())
+		last_mold_event = datetime.fromisoformat(moldfile.readline().strip())
 		print("last mold event: "+last_mold_event.isoformat())
 		max_mold_days = int(moldfile.readline())
-		print("max mold days: "+max_mold_days)
+		print("max mold days: "+str(max_mold_days))
 		moldfile.close()
 	else:
 		print("no moldfile found, creating it with today's date")
@@ -357,12 +362,15 @@ async def on_message(message: discord.message):
 				print(judged_messages)
 
 			elif 'mold counter' in message.content.lower():
+				global last_mold_event
+				global max_mold_days
 				current_mold_event = datetime.now()
 				days_since_mold = (current_mold_event - last_mold_event).days
-				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" since the last mold event.\nIt is now back to zero. The current record is "+str(max_mold_days)+" days.")
+				if days_since_mold > max_mold_days:
+					max_mold_days = days_since_mold
+				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" days since the last mold event. It is now back to zero.\nThe current record is "+str(max_mold_days)+" days.")
 				# update the moldfile
-				last_mold_event=  datetime.now()
-				max_mold_days = 0
+				last_mold_event = datetime.now()
 				reset_moldfile()
 
 			else:
