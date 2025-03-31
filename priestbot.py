@@ -103,6 +103,13 @@ emoji_aliases = [
 
 username_to_user = {}
 
+def reset_moldfile():
+	with open("moldfile", "w+") as moldfile:
+		moldfile.writelines([
+			last_mold_event.isoformat(),
+			max_mold_days
+		])
+
 @client.event
 async def on_ready():
 	print("starting precache...")
@@ -135,11 +142,7 @@ async def on_ready():
 		moldfile.close()
 	else:
 		print("no moldfile found, creating it with today's date")
-		with open("moldfile", "w+") as moldfile:
-			moldfile.writelines([
-				datetime.now().isoformat(),
-				"\n0"
-			])
+		reset_moldfile()
 		last_mold_event=  datetime.now()
 		max_mold_days = 0
 
@@ -357,6 +360,10 @@ async def on_message(message: discord.message):
 				current_mold_event = datetime.now()
 				days_since_mold = (current_mold_event - last_mold_event).days
 				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" since the last mold event.\nIt is now back to zero. The current record is "+str(max_mold_days)+" days.")
+				# update the moldfile
+				last_mold_event=  datetime.now()
+				max_mold_days = 0
+				reset_moldfile()
 
 			else:
 				await message.reply("in DMs, my child 🙏")
