@@ -356,7 +356,7 @@ async def on_message(message: discord.message):
 			elif 'mold counter' in message.content.lower():
 				current_mold_event = datetime.now()
 				days_since_mold = (current_mold_event - last_mold_event).days
-				await message.reply("Mold counter reset, my child. It had been "+days_since_mold+" since the last mold event.\nIt is now back to zero. The current record is "+max_mold_days+" days.")
+				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" since the last mold event.\nIt is now back to zero. The current record is "+str(max_mold_days)+" days.")
 
 			else:
 				await message.reply("in DMs, my child 🙏")
