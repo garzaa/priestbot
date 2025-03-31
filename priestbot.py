@@ -129,7 +129,7 @@ async def on_ready():
 	if os.path.isfile(os.path.join(os.getcwd(), "moldfile.txt")):
 		moldfile = open("moldfile.txt", "r+")
 		last_mold_event = datetime.fromisoformat(moldfile.readline())
-		print("last mold event: "+last_mold_event)
+		print("last mold event: "+last_mold_event.isoformat())
 		max_mold_days = int(moldfile.readline())
 		print("max mold days: "+max_mold_days)
 		moldfile.close()
