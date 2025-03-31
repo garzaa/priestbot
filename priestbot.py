@@ -138,7 +138,7 @@ async def on_ready():
 		with open("moldfile.txt", "w+") as moldfile:
 			moldfile.writelines([
 				datetime.now().isoformat(),
-				"0"
+				"\n0"
 			])
 		last_mold_event=  datetime.now()
 		max_mold_days = 0
