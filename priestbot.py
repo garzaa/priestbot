@@ -135,7 +135,7 @@ async def on_ready():
 		moldfile.close()
 	else:
 		print("no moldfile found, creating it with today's date")
-		with open("moldfile.txt", "r") as moldfile:
+		with open("moldfile.txt", "w+") as moldfile:
 			moldfile.writelines([
 				datetime.now().isoformat(),
 				"0"
