@@ -98,6 +98,10 @@ emoji_aliases = [
 	{
 		"triggers": ["go whiteboy", "go white boy"],
 		"id": 1346703777650184222
+	},
+	{
+		"triggers": ["bloodfeast"],
+		"id": 1357116880061726730
 	}
 ]
 
