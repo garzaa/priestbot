@@ -389,7 +389,7 @@ async def on_message(message: discord.message):
 	if random.randint(0, 100) == 1:
 		await message.reply("Your message was passed on, but deemed not sinful enough. You may confess again this hour.")
 	else:
-		confession_cooldowns[message.author.id] = now
+		confession_cooldowns[message.author.id] = datetime.now()
 
 
 def on_cooldown(user_id) -> bool:
