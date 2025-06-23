@@ -31,6 +31,9 @@ emoji_regex = r"(?<!\<):\w+:"
 emojis = {}
 animated_emojis = set()
 
+last_mold_event = datetime.now()
+max_mold_days = 0
+
 emoji_aliases = [
 	{
 		"triggers": ["gnash", "bite", "biting", "gnashing", "chomp"],
@@ -91,13 +94,33 @@ emoji_aliases = [
 	{
 		"triggers": ["grinch"],
 		"id": 1198372828668502037
+	},
+	{
+		"triggers": ["go whiteboy", "go white boy"],
+		"id": 1346703777650184222
+	},
+	{
+		"triggers": ["bloodfeast"],
+		"id": 1357116880061726730
 	}
 ]
 
 username_to_user = {}
 
+def reset_moldfile():
+	global last_mold_event
+	global max_mold_days
+	with open("moldfile", "w+") as moldfile:
+		moldfile.writelines([
+			last_mold_event.isoformat(),
+			"\n",
+			str(max_mold_days)
+		])
+
 @client.event
 async def on_ready():
+	global last_mold_event
+	global max_mold_days
 	print("starting precache...")
 	forest: discord.guild = client.get_guild(372636330724950017)
 	for emoji in forest.emojis:
@@ -117,6 +140,20 @@ async def on_ready():
 			sys.exit(1)
 		else:
 			await confession_channel().send(substitute_emojis(sys.argv[1]))
+
+	print("checking for moldfile...")
+	if os.path.isfile(os.path.join(os.getcwd(), "moldfile")):
+		moldfile = open("moldfile", "r+")
+		last_mold_event = datetime.fromisoformat(moldfile.readline().strip())
+		print("last mold event: "+last_mold_event.isoformat())
+		max_mold_days = int(moldfile.readline())
+		print("max mold days: "+str(max_mold_days))
+		moldfile.close()
+	else:
+		print("no moldfile found, creating it with today's date")
+		reset_moldfile()
+		last_mold_event=  datetime.now()
+		max_mold_days = 0
 
 	print("precache finished, ready for confessions")
 
@@ -281,6 +318,9 @@ def is_judgment_request(msg: str) -> bool:
 
 @client.event
 async def on_message(message: discord.message):
+	global last_mold_event
+	global max_mold_days
+
 	if message.author == client.user:
 		return
 
@@ -289,51 +329,64 @@ async def on_message(message: discord.message):
 			print("was tagged in message: "+message.content)
 			# if the message contains a trigger word
 			aliases = get_aliases(message.content)
-			if not aliases:
-				print("no alias found in messages")
-				# because i KNOW this will happen
-				if 'cum' in message.content:
-					# react with unsure
-					print("someone asked for cum again")
-					await message.add_reaction(client.get_emoji(819694888672296982))
-					return
-				elif is_judgment_request(message.content):
+			if aliases:
+				for x in aliases:
+					alias = x["id"]
+				
+					# if the message isn't a reply, emoji react on it
 					if message.reference is None:
-						if message.id in judged_messages:
-							await message.reply("I have already passed judgment, my child.")
-							return
-						judged_messages.add(message.id)
-						await message.reply(random.choice(judgments))
+						print("adding a reaction ("+str(alias)+") to message: "+message.content)
+						await message.add_reaction(client.get_emoji(alias))
 					else:
+						print("adding a reaction ("+str(alias)+") to OP message from reply: "+message.content)
 						op = await message.channel.fetch_message(message.reference.message_id)
-						if op.id in judged_messages:
-							await message.reply("I have already passed judgment, my child.")
-							return
-						judged_messages.add(op.id)
-						await op.reply(random.choice(judgments))
-					print(judged_messages)
-				else:
-					await message.reply("in DMs, my child 🙏")
+						await op.add_reaction(client.get_emoji(alias))
+						await message.add_reaction("🙏")
+				if "delete" in message.content and message.reference:
+					await message.delete()
 				return
 
-			for x in aliases:
-				alias = x["id"]
-				
-				# if the message isn't a reply, emoji react on it
-				if message.reference is None:
-					print("adding a reaction ("+str(alias)+") to message: "+message.content)
-					await message.add_reaction(client.get_emoji(alias))
-				else:
-					print("adding a reaction ("+str(alias)+") to OP message from reply: "+message.content)
-					op = await message.channel.fetch_message(message.reference.message_id)
-					await op.add_reaction(client.get_emoji(alias))
-					await message.add_reaction("🙏")
+			elif 'cum' in message.content:
+				# react with unsure
+				print("someone asked for cum again")
+				await message.add_reaction(client.get_emoji(819694888672296982))
+				return
 
-			if "delete" in message.content and message.reference:
-				await message.delete()
+			elif is_judgment_request(message.content):
+				if message.reference is None:
+					if message.id in judged_messages:
+						await message.reply("I have already passed judgment, my child.")
+						return
+					judged_messages.add(message.id)
+					await message.reply(random.choice(judgments))
+				else:
+					op = await message.channel.fetch_message(message.reference.message_id)
+					if op.id in judged_messages:
+						await message.reply("I have already passed judgment, my child.")
+						return
+					judged_messages.add(op.id)
+					await op.reply(random.choice(judgments))
+				print(judged_messages)
+
+			elif 'reset' in message.content.lower() and 'mold counter' in message.content.lower():
+				current_mold_event = datetime.now()
+				days_since_mold = (current_mold_event - last_mold_event).days
+				if days_since_mold > max_mold_days:
+					max_mold_days = days_since_mold
+				await message.reply("Mold counter reset, my child. It had been "+str(days_since_mold)+" days since the last mold event.\nThe current record is "+str(max_mold_days)+" days.\n"+make_penance(relay=False))
+				# update the moldfile
+				last_mold_event = datetime.now()
+				reset_moldfile()
+			elif 'mold counter' in message.content.lower():
+				await message.reply("It's been "+str((datetime.now() - last_mold_event).days) +" days since the last mold event, my child. Your current group record is "+str(max_mold_days)+" days.")
+
+			else:
+				await message.reply("in DMs, my child 🙏")
+				return
 					
 		return
 	
+	# message pigs
 	space_split = message.content.split(" ")
 	message_content = " ".join(space_split[2:])
 	if space_split[0].lower() == "messagepig":
@@ -403,13 +456,14 @@ def past_cooldown(now, then) -> bool:
 	return diff.total_seconds() > cooldown_seconds
 
 
-def make_penance() -> str:
-    if random.randint(0, 100) <= 2:
-        return "I can't believe how sick you make me."
-    else:
-        s: str = "Thank you, my child. I will relay your message immediately. For your penance, "
-        s += random.choice(penances) + "."
-        return s
+def make_penance(relay=True) -> str:
+	if random.randint(0, 100) <= 2:
+		return "I can't believe how sick you make me."
+	else:
+		s: str = "Thank you, my child. I will relay your message immediately. " if relay else ""
+		s += "For your penance, "
+		s += random.choice(penances) + "."
+		return s
 	
 
 async def message_pig(message: str, target: discord.User) -> str:
