@@ -27,7 +27,7 @@ from difflib import SequenceMatcher as SM
 confession_cooldowns = {}
 pig_cooldowns = {}
 
-emoji_regex = r"(?<!\<):\w+:"
+emoji_regex = r"(?<!\<)(?<!\<a):\w+:"
 emojis = {}
 animated_emojis = set()
 
